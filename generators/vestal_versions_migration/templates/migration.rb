@@ -5,12 +5,14 @@ class CreateVestalVersions < ActiveRecord::Migration
       t.text :changes
       t.integer :number
       t.datetime :created_at
+      t.datetime :effective_at
     end
 
     change_table :versions do |t|
       t.index [:versioned_type, :versioned_id]
       t.index :number
       t.index :created_at
+      t.index :effective_at
     end
   end
 

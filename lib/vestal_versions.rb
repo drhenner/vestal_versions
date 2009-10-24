@@ -33,6 +33,10 @@ module LaserLemon
             end
           end
 
+          def effective_at(value)
+             last(:conditions => ['versions.effective_at <= ?', value.to_time])
+          end
+
           def number_at(value)
             case value
               when Version then value.number
@@ -58,7 +62,7 @@ module LaserLemon
             when version_only_columns then self.class.column_names & version_only_columns
             when version_except_columns then self.class.column_names - version_except_columns
             else self.class.column_names
-          end - %w(created_at created_on updated_at updated_on)
+          end - %w(created_at created_on updated_at updated_on effective_at)
         end
 
         def needs_initial_version?
@@ -75,14 +79,22 @@ module LaserLemon
         end
 
         def create_initial_version
-          versions.create(:changes => nil, :number => 1)
+          versions.create(:changes => nil, :number => 1, :effective_at => (set_effective_at))
         end
 
         def create_version
-          versions.create(:changes => changes.slice(*versioned_columns), :number => (last_version + 1))
+          versions.create(:changes => changes.slice(*versioned_columns), :number => (last_version + 1), :effective_at => (set_effective_at))
           reset_version
         end
 
+        def set_effective_at
+          (respond_to?('effective_at') && !effective_at.nil?) ? effective_at : default_effective_at
+        end
+
+        def default_effective_at
+          t = self.class.default_timezone == :utc ? Time.now.utc : Time.now
+        end
+      
       public
         def version
           @version ||= last_version

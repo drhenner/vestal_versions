@@ -75,3 +75,27 @@ It's that easy! Now watch it in action...
   => "Stephen Richert"
   >> u.version
   => 5
+
+=================
+
+NEW in this fork!!!
+
+effective_at.
+
+Lets say you have the following senario:
+
+Patient comes into a Doctors office.
+Patient tells the doctor they have "XYZ insurance"
+The Bill is sent out and rejected because the insurance is wrong.
+You now need to update the existing record with an effective date before the patient's visit.
+
+Now if you try to generate a claim you can see what the patient originally told you by using
+
+visit.at(Time)
+
+If you want the information that should have been originally you do this:
+
+visit.effective_at(Time)
+
+COOL EHHH!!!
+(10/23/2009 => I am in the process of making this right now.  I'll update ASAP.)
