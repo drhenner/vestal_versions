@@ -33,7 +33,7 @@ module LaserLemon
             end
           end
 
-          def effective_at(value)
+          def effective_version(value)
              last(:conditions => ['versions.effective_at <= ?', value.to_time])
           end
 
@@ -153,6 +153,21 @@ module LaserLemon
         def latest_changes
           return {} if version.nil? || version == 1
           versions.at(version).changes
+        end
+		
+        def effective_at(value) # Only accepts Date or Time
+          to_number = versions.effective_version(value)
+          changes   = changes_between(version, to_number)
+          #return version if changes.empty?
+          if changes.empty?
+            write_attribute(:invalid, true)
+            return version
+          end
+
+          changes.each do |attribute, change|
+            write_attribute(attribute, change.last)
+          end
+          to_number
         end
     end
   end
